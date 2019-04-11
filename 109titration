@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+##
+## EPITECH PROJECT, 2019
+## 109titration
+## File description:
+## math
+##
+
+import sys
+import math
+
+def check_for_err():
+    halp = open("help", "r")
+
+    if len(sys.argv) > 1 and sys.argv[1] == "-h":
+        print(halp.read())
+        sys.exit(0)
+    if len(sys.argv) != 2:
+        sys.exit(84)
+
+def calc(data):
+    deriv = []
+    equi = 0.0
+    point = 1
+
+    print("Derivative:")
+    for i in range(1, len(data) - 1):
+        deriv.append((data[i + 1][1] - data[i - 1][1])/(data[i + 1][0] - data[i - 1][0]))
+        print("{:.1f} ml -> {:.2f}".format(data[i][0], deriv[i - 1]))
+        if equi < deriv[i - 1]:
+            equi = deriv[i - 1]
+            point = data[i][0]
+    print("\nEquivalent point at {} ml\n".format(point))
+    print("Second derivative")
+    for i in range(1, len(deriv) - 1):
+        res = (deriv[i + 1] - deriv[i - 1])/(data[i + 2][0] - data[i][0])
+        print("{:.1f} ml -> {:.2f}".format(data[i + 1][0], res))
+    print("\nSecond derivative estimated")
+    print("\nEquivalent point at {} ml".format(0.0))
+
+def check_data(data):
+    for i in range(0, len(data)):
+        if len(data[i]) == 2:
+            for j in range(0, 2):
+                try:
+                    data[i][j] = float(data[i][j])
+                except ValueError:
+                    sys.exit(84)
+        else:
+            sys.exit(84)
+    return(data)
+
+def get_data(name):
+    data = open(name, "r")
+    data = data.read()
+    data = data.split("\n")
+
+    for i in range (0, len(data)):
+        if data[i] == "":
+            data.pop(i)
+    for i in range (0, len(data)):
+        data[i] = data[i].split(";")
+    data = check_data(data)
+    return(data)
+
+def main():
+    check_for_err()
+    data = get_data(sys.argv[1])
+    calc(data)
+
+if __name__ == "__main__":
+    main()
